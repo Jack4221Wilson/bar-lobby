@@ -1,15 +1,17 @@
 <template>
-    <h1>{{ battle.battleOptions.title }}</h1>
     <div :class="['battle-container', { singleplayer: isOfflineBattle(battle) }]">
-        <div v-if="isSpadsBattle(battle)" class="subtitle flex-row gap-md flex-wrap">
-            <div class="flex-row gap-sm">
-                Hosted by
-                <div class="founder flex-row gap-sm">
-                    <Flag :countryCode="battle.founder.value.countryCode" style="width: 16px" />
-                    {{ battle.founder.value.username }}
+        <div class="header flex-col gap-md">
+            <h1 class="title">{{ battle.battleOptions.title }}</h1>
+            <div v-if="isSpadsBattle(battle)" class="subtitle flex-row gap-md flex-wrap">
+                <div class="flex-row gap-sm">
+                    Hosted by
+                    <div class="founder flex-row gap-sm">
+                        <Flag :countryCode="battle.founder.value.countryCode" style="width: 16px" />
+                        {{ battle.founder.value.username }}
+                    </div>
                 </div>
+                <div class="flex-right">{{ battle.friendlyRuntime.value }}</div>
             </div>
-            <div class="flex-right">{{ battle.friendlyRuntime.value }}</div>
         </div>
         <div class="players flex-col gap-md">
             <Playerlist :battle="battle" :me="me" />
@@ -60,6 +62,8 @@
                 <Select
                     :modelValue="battle.battleOptions.gameVersion"
                     :options="installedGames"
+                    optionLabel="id"
+                    optionValue="id"
                     label="Game"
                     :filter="true"
                     :placeholder="battle.battleOptions.gameVersion"
@@ -82,6 +86,8 @@
             <Select
                 :modelValue="battle.battleOptions.engineVersion"
                 :options="installedEngines"
+                optionLabel="id"
+                optionValue="id"
                 label="Engine"
                 :filter="true"
                 :placeholder="battle.battleOptions.engineVersion"
@@ -216,7 +222,7 @@ const props = defineProps<{
 
 const installedEngines = computed(() => api.content.engine.installedVersions);
 const installedMaps = computed(() =>
-    api.content.maps.installedMaps.sort((a, b) => {
+    api.content.maps.installedVersions.sort((a, b) => {
         return a.friendlyName.localeCompare(b.friendlyName);
     })
 );
@@ -336,7 +342,7 @@ async function start() {
     grid-template-rows: auto 1fr;
     gap: 10px;
     grid-template-areas:
-        "header chat settings"
+        "header header settings"
         "players chat settings";
     &.singleplayer {
         grid-template-areas:
